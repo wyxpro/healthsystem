@@ -1,4 +1,4 @@
-# 健康关怀系统 (Health Care System)
+﻿# 健康关怀系统 (Health Care System)
 
 <div align="center">
 
@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Platform](https://img.shields.io/badge/platform-iOS%20%7C%20Android%20%7C%20Web-lightgrey.svg)
 
-一个集成心理健康评估、智能手环数据监测、情绪追踪的综合健康管理平台
+一个集成心理健康评估、智能手环数据监测、情绪追踪的抑郁健康管理平台
 
 </div>
 
@@ -65,54 +65,116 @@
 
 ## 🏗️ 项目架构
 
+### 系统架构总览
 
-### 系统架构图
-
+```mermaid
+graph TB
+    subgraph Layer1["📱 表现层 Presentation Layer"]
+        P1["uni-app 跨平台框架"]
+        P2["Vue.js 2.x MVVM"]
+        P3["uView UI 组件库"]
+        P4["ECharts 数据可视化"]
+    end
+    
+    subgraph Layer2["💼 业务逻辑层 Business Logic Layer"]
+        B1["用户认证模块<br/>Shiro + JWT"]
+        B2["心理量表评估<br/>SDS/SAS/PSS/PHQ-9"]
+        B3["健康数据管理<br/>心率/睡眠/步数/血氧"]
+        B4["情绪追踪模块<br/>EMA 生态瞬时评估"]
+        B5["消息推送服务<br/>极光推送 + 厂商通道"]
+    end
+    
+    subgraph Layer3["⚙️ 服务层 Service Layer"]
+        S1["Spring Boot 2.3.4"]
+        S2["RESTful API 接口"]
+        S3["业务服务实现"]
+        S4["数据访问接口"]
+    end
+    
+    subgraph Layer4["💾 持久层 Persistence Layer"]
+        D1["MyBatis ORM 框架"]
+        D2["Druid 数据库连接池"]
+        D3["MySQL 8.0 关系型数据库"]
+    end
+    
+    subgraph Layer5["🔗 集成层 Integration Layer"]
+        I1["Garmin Connect API"]
+        I2["Python 数据同步脚本"]
+        I3["极光推送 SDK"]
+        I4["厂商推送通道集成"]
+    end
+    
+    P1 --> P2
+    P1 --> P3
+    P1 --> P4
+    
+    P1 --> B1
+    P1 --> B2
+    P1 --> B3
+    P1 --> B4
+    P1 --> B5
+    
+    B1 --> S1
+    B2 --> S1
+    B3 --> S1
+    B4 --> S1
+    B5 --> S1
+    
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    
+    S4 --> D1
+    D1 --> D2
+    D2 --> D3
+    
+    I1 --> I2
+    I2 --> S3
+    S3 --> I3
+    I3 --> I4
+    
+    style Layer1 fill:#e1bee7,stroke:#4a148c,stroke-width:3px
+    style Layer2 fill:#bbdefb,stroke:#0d47a1,stroke-width:3px
+    style Layer3 fill:#ffccbc,stroke:#bf360c,stroke-width:3px
+    style Layer4 fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
+    style Layer5 fill:#fff9c4,stroke:#f57f17,stroke-width:3px
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        客户端层                              │
-├─────────────────────────────────────────────────────────────┤
-│  iOS App  │  Android App  │  H5 Web  │  微信小程序          │
-│           (uni-app 跨平台统一开发)                           │
-└────────────────────┬────────────────────────────────────────┘
-                     │ HTTPS (SSL/TLS)
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                      应用服务层                              │
-├─────────────────────────────────────────────────────────────┤
-│  Spring Boot (Port: 1443)                                   │
-│  ├─ Controller 层 (RESTful API)                             │
-│  ├─ Service 层 (业务逻辑)                                    │
-│  ├─ Shiro + JWT (安全认证)                                  │
-│  └─ Swagger/Knife4j (API 文档)                              │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-        ┌────────────┼────────────┐
-        ↓            ↓            ↓
-┌──────────┐  ┌──────────┐  ┌──────────────┐
-│  MySQL   │  │  极光推送 │  │ Garmin API   │
-│  数据库  │  │  服务    │  │ (Python)     │
-└──────────┘  └──────────┘  └──────────────┘
+
+### 数据流向图
+
+```mermaid
+graph LR
+    A["⌚ Garmin 智能手环<br/>数据采集"]
+    B["☁️ Garmin Connect<br/>云端服务"]
+    C["🐍 Python 脚本<br/>定时拉取"]
+    D["🔄 数据处理<br/>格式转换"]
+    E["🖥️ Spring Boot API<br/>后端服务"]
+    F[("💾 MySQL<br/>数据存储")]
+    G["📱 uni-app<br/>前端应用"]
+    H["📊 ECharts<br/>图表展示"]
+    I["👤 用户查看<br/>数据分析"]
+    
+    A -->|蓝牙同步| B
+    B -->|OAuth API| C
+    C -->|数据拉取| D
+    D -->|HTTP POST| E
+    E -->|存储| F
+    F -->|查询| E
+    E -->|JSON 响应| G
+    G -->|渲染| H
+    H -->|展示| I
+    
+    style A fill:#ffebee,stroke:#c62828,stroke-width:2px
+    style B fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style C fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style D fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style E fill:#ffccbc,stroke:#bf360c,stroke-width:2px
+    style F fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style G fill:#e1bee7,stroke:#6a1b9a,stroke-width:2px
+    style H fill:#e1bee7,stroke:#6a1b9a,stroke-width:2px
+    style I fill:#b2dfdb,stroke:#00695c,stroke-width:2px
 ```
 
-### 后端分层架构
-
-```
-backend/
-├── controller/          # 控制层 - 处理 HTTP 请求
-│   ├── UserController
-│   ├── health/         # 健康数据控制器
-│   ├── scale/          # 量表评估控制器
-│   └── answer/         # 问卷答案控制器
-├── service/            # 服务层 - 业务逻辑
-├── mapper/             # 持久层 - 数据访问
-├── entity/             # 实体层 - 数据模型
-├── shiro/              # 安全层 - 认证授权
-├── config/             # 配置层
-└── utils/              # 工具类
-```
-
----
 
 ## 📁 目录结构
 
@@ -222,7 +284,86 @@ python-garminconnect-master/
 ---
 
 ## ⚡ 核心功能模块
+### 核心功能模块架构
 
+```mermaid
+graph TB
+    subgraph Module1["👤 用户认证模块"]
+        M1A["注册登录"]
+        M1B["邀请码机制"]
+        M1C["Shiro + JWT 认证"]
+        M1D["权限管理 RBAC"]
+        M1E["密码加密存储"]
+    end
+    
+    subgraph Module2["🧠 心理量表评估模块"]
+        M2A["SDS 抑郁自评量表"]
+        M2B["SAS 焦虑自评量表"]
+        M2C["PSS 压力感知量表"]
+        M2D["PHQ-9 患者健康问卷"]
+        M2E["自动评分与报告生成"]
+        M2F["历史记录与趋势分析"]
+    end
+    
+    subgraph Module3["📊 智能手环数据同步"]
+        M3A["Garmin Connect API"]
+        M3B["心率数据同步"]
+        M3C["睡眠数据同步"]
+        M3D["步数与活动数据"]
+        M3E["血氧 SpO2 数据"]
+        M3F["压力与身体能量"]
+    end
+    
+    subgraph Module4["💭 情绪追踪模块"]
+        M4A["EMA 生态瞬时评估"]
+        M4B["情绪日记记录"]
+        M4C["图像情绪选择"]
+        M4D["PAM 情绪历史分析"]
+    end
+    
+    subgraph Module5["📝 日常健康报告"]
+        M5A["每日状态填报"]
+        M5B["睡眠质量评估"]
+        M5C["食欲与精力记录"]
+        M5D["报告自动生成"]
+        M5E["趋势预测分析"]
+    end
+    
+    subgraph Module6["🔔 消息推送模块"]
+        M6A["极光推送平台"]
+        M6B["厂商推送通道"]
+        M6C["定时填报提醒"]
+        M6D["量表评估提醒"]
+        M6E["用药提醒配置"]
+        M6F["系统通知公告"]
+    end
+    
+    subgraph Module7["📈 数据可视化模块"]
+        M7A["ECharts 图表库"]
+        M7B["折线图趋势分析"]
+        M7C["柱状图对比展示"]
+        M7D["雷达图多维评估"]
+        M7E["交互式数据查看"]
+        M7F["图表导出功能"]
+    end
+    
+    subgraph Module8["👨‍⚕️ 医生管理模块"]
+        M8A["患者列表管理"]
+        M8B["健康数据查看"]
+        M8C["评估结果分析"]
+        M8D["邀请码生成"]
+        M8E["群体数据统计"]
+    end
+    
+    style Module1 fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style Module2 fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style Module3 fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    style Module4 fill:#fce4ec,stroke:#ad1457,stroke-width:2px
+    style Module5 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Module6 fill:#fff9c4,stroke:#f57f17,stroke-width:2px
+    style Module7 fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+    style Module8 fill:#ffebee,stroke:#c62828,stroke-width:2px
+```
 
 ### 1️⃣ 用户认证模块
 
