@@ -1,0 +1,43 @@
+{
+  "homeInfo": {
+    "title": "用户填报详情",
+    "href": "page/table_detail.html"
+  },
+  "logoInfo": {
+    "title": "HealthSystem",
+    "image": "../images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+      {
+        "title": "用户管理",
+        "href": "page/table_user.html",
+        "icon": "fa fa-user",
+        "target": "_self"
+      },
+      {
+        "title": "用户填报详情",
+        "href": "page/table_detail.html",
+        "icon": "fa fa-bar-chart",
+        "target": "_self"
+      },
+      {
+        "title": "整体情况分析",
+        "href": "page/table_whole.html",
+        "icon": "fa fa-bar-chart",
+        "target": "_self"
+      },
+      {
+        "title": "压力情况分析",
+        "href": "page/table_pss.html",
+        "icon": "fa fa-bar-chart",
+        "target": "_self"
+      },
+    {
+      "title": "健康情况分析",
+      "href": "page/table_health.html",
+      "icon": "fa fa-bar-chart",
+      "target": "_self"
+    }
+  ]
+}
