@@ -29,6 +29,13 @@
 			}
 		},
 		{
+			"path": "pages/heal/heal",
+			"style": {
+				"navigationBarTitleText": "疗愈",
+				"navigationBarBackgroundColor": "#a1c4fd"
+			}
+		},
+		{
 			"path": "pages/mine/mine",
 			"style": {
 				"navigationBarTitleText": "我的"
@@ -338,6 +345,12 @@
 			// 	"iconPath": "static/images/index/news11.png",
 			// 	"selectedIconPath": "static/images/index/news22.png"
 			// },
+			{
+				"pagePath": "pages/heal/heal",
+				"text": "疗愈",
+				"iconPath": "static/images/index/news11.png",
+				"selectedIconPath": "static/images/index/news22.png"
+			},
 			{
 				"pagePath": "pages/mine/mine",
 				"text": "我的",
